@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>hide.png</file>
+        <file>show.png</file>
+        <file>hello_picture.jpg</file>
+        <file>x8VHCNnO_VA_prev_ui.png</file>
+        <file>gift.ico</file>
+    </qresource>
+</RCC>
