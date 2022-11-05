@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
+import QtQuick.Window 2.15
 
 // 1
 Window {
@@ -9,7 +10,7 @@ Window {
     height: 680
     visible: true
     title: qsTr("MyApp")
-    minimumHeight: 500
+    minimumHeight: 600
     minimumWidth: 600
 
     // Дополнительный контейнер на всю область контента главного окна
@@ -47,7 +48,6 @@ Window {
                     color: "black"
                     font.bold: true
                     wrapMode: Text.NoWrap
-                    //Layout.leftMargin: 2
                     Layout.fillWidth: true
 
                 } // 4
@@ -62,7 +62,6 @@ Window {
                     font.pointSize: 10
                     color: "grey"
                     wrapMode: Text.WordWrap
-                    //Layout.leftMargin: 20
                     Layout.fillWidth: true
                 } // 5
 
@@ -76,8 +75,7 @@ Window {
                     font.pointSize: 10
                     color: "dimgrey"
                     font.bold: true
-                    wrapMode: Text.NoWrap
-                    //Layout.leftMargin: 20
+                    wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 } // 6
 
@@ -109,7 +107,7 @@ Window {
                     font.pointSize: 10
                     color: "dimgrey"
                     font.bold: true
-                    wrapMode: Text.NoWrap
+                    wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 } // 8
 
@@ -223,13 +221,13 @@ Window {
                     state: "hoverLeave"
 
                     background: Rectangle {
+                        id: rectBg
                         radius: 5
                         color: "#6c63fe"
+                        border.color: "#6c63fe"
 
                         implicitWidth: 100
                         implicitHeight: 30
-
-
                     }
 
                     contentItem: Label {
@@ -245,10 +243,13 @@ Window {
                         State {
                             name: "hoverEnter"
                             PropertyChanges { target: lbl; color: "#6c63fe" }
+                            PropertyChanges { target: rectBg; color: "white" }
+                            PropertyChanges { target: rectBg; border.color: "#6c63fe" }
                         },
                         State {
                             name: "hoverLeave"
                             PropertyChanges { target: lbl; color: "white" }
+                            PropertyChanges { target: rectBg; color: "#6c63fe" }
                         }
                     ]
 
@@ -263,7 +264,6 @@ Window {
                     id: controlSignUp
                     Layout.maximumWidth: 200
                     Layout.fillWidth: true
-                   // Layout.leftMargin: 20
                     Layout.bottomMargin: 40
                     Layout.alignment: Qt.AlignBottom
 
