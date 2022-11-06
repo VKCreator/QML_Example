@@ -13,6 +13,61 @@ Window {
     minimumHeight: 600
     minimumWidth: 600
 
+    // 17 Элемент для изменения темы окна (light/dark)
+    Image {
+        id: themeType
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: 7
+        sourceSize.width: 32
+        sourceSize.height: 32
+        state: "light"
+
+        z: 2
+
+        MouseArea {
+            cursorShape: Qt.PointingHandCursor
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton
+
+            onClicked: themeType.state === "light" ? themeType.state = "dark" : themeType.state = "light"
+
+        }
+
+        states: [
+            State {
+                name: "light"
+                PropertyChanges { target: themeType; source: "/images/moon.png" }
+                PropertyChanges { target: rightRect; color: "#f9f6fd" }
+                PropertyChanges { target: leftRect; color: "white" }
+                PropertyChanges { target: mainText; color: "black" }
+                PropertyChanges { target: logInText; color: "black" }
+                PropertyChanges { target: logInInfoText; color: "grey" }
+                PropertyChanges { target: emailText; color: "dimgrey" }
+                PropertyChanges { target: passwordText; color: "dimgrey" }
+                PropertyChanges { target: control; state: "hoverLeaveLight" }
+                PropertyChanges { target: eyePassword; state: "hide" }
+            },
+            State {
+                name: "dark"
+                PropertyChanges { target: themeType; source: "/images/sun.png" }
+                PropertyChanges { target: rightRect; color: "#1e1e1e" }
+                PropertyChanges { target: leftRect; color: "#292929" }
+                PropertyChanges { target: mainText; color: "white" }
+                PropertyChanges { target: logInText; color: "white" }
+                PropertyChanges { target: logInInfoText; color: "#979797" }
+                PropertyChanges { target: emailText; color: "#979797" }
+                PropertyChanges { target: passwordText; color: "#979797" }
+                PropertyChanges { target: control; state: "hoverLeaveDark" }
+                PropertyChanges { target: emailField; color: "#979797" }
+                PropertyChanges { target: passField; color: "#979797" }
+                PropertyChanges { target: eyePassword; state: "hideDark" }
+            }
+        ]
+    }
+
+
     // Дополнительный контейнер на всю область контента главного окна
     Rectangle {
         id: container
@@ -43,6 +98,7 @@ Window {
 
                 // 4
                 Text {
+                    id: logInText
                     text: "Log in."
                     font.pointSize: 25
                     color: "black"
@@ -58,6 +114,7 @@ Window {
 
                 // 5
                 Text {
+                    id: logInInfoText
                     text: "Log in with your data that your entered during your registration"
                     font.pointSize: 10
                     color: "grey"
@@ -71,6 +128,7 @@ Window {
 
                 // 6
                 Text {
+                    id: emailText
                     text: "Enter your email address"
                     font.pointSize: 10
                     color: "dimgrey"
@@ -82,12 +140,14 @@ Window {
 
                 // 7
                 TextField  {
+                    id: emailField
                     placeholderText: "name@example.com"
-                    placeholderTextColor: "grey"
                     color: "black"
                     focus: true
                     Layout.maximumWidth: 200
                     Layout.fillWidth: true
+                    selectByMouse: true // выделение содержимого
+                    selectionColor: "grey"
 
                     background: Rectangle {
                         color: "transparent"
@@ -103,6 +163,7 @@ Window {
 
                 // 8
                 Text {
+                    id: passwordText
                     text: "Enter your password"
                     font.pointSize: 10
                     color: "dimgrey"
@@ -122,10 +183,11 @@ Window {
 
                         Layout.fillWidth: true
                         placeholderText: "atleast 8 characters"
-                        color: "grey"
+                        selectByMouse: true
+                        selectionColor: "grey"
+                        color: "black"
 
                         focus: true
-                        // Layout.preferredWidth: 100
                         Layout.maximumWidth: 200
                         echoMode: TextField.Password
                         validator: RegularExpressionValidator  {
@@ -144,14 +206,22 @@ Window {
                     // 10
                     Image {
                         id: eyePassword
-                        source: "/images/hide.png"
                         sourceSize.width: 16
                         sourceSize.height: 16
-                        state: "hide"
 
                         MouseArea {
+                            cursorShape: Qt.PointingHandCursor
                             anchors.fill: parent
-                            onClicked: {eyePassword.state === "show" ? eyePassword.state = "hide" : eyePassword.state = "show"}
+                            onClicked: {
+                                if (eyePassword.state === "show")
+                                    eyePassword.state = "hide"
+                                else if (eyePassword.state === "hide")
+                                    eyePassword.state = "show"
+                                else if (eyePassword.state === "showDark")
+                                    eyePassword.state = "hideDark"
+                                else
+                                    eyePassword.state = "showDark"
+                            }
                         }
 
                         states: [
@@ -163,6 +233,16 @@ Window {
                             State {
                                 name: "hide"
                                 PropertyChanges { target: eyePassword; source: "/images/hide.png" }
+                                PropertyChanges { target: passField; echoMode: TextField.Password }
+                            },
+                            State {
+                                name: "showDark"
+                                PropertyChanges { target: eyePassword; source: "/images/showDark.png" }
+                                PropertyChanges { target: passField; echoMode: TextField.Normal }
+                            },
+                            State {
+                                name: "hideDark"
+                                PropertyChanges { target: eyePassword; source: "/images/hideDark.png" }
                                 PropertyChanges { target: passField; echoMode: TextField.Password }
                             }
                         ]
@@ -218,7 +298,6 @@ Window {
                     Layout.maximumWidth: 200
                     Layout.fillWidth: true
 
-                    state: "hoverLeave"
 
                     background: Rectangle {
                         id: rectBg
@@ -237,19 +316,39 @@ Window {
                         horizontalAlignment: Qt.AlignHCenter
                     }
 
-                    onHoveredChanged: control.state === "hoverLeave" ? control.state = "hoverEnter" : control.state = "hoverLeave"
+                    onHoveredChanged: () => {
+                        if (control.state === "hoverLeaveLight")
+                            control.state = "hoverEnterLight"
+                        else if (control.state === "hoverEnterLight")
+                            control.state = "hoverLeaveLight"
+                        else if (control.state === "hoverLeaveDark")
+                            control.state = "hoverEnterDark"
+                        else
+                            control.state = "hoverLeaveDark"
+                    }
+
 
                     states: [
                         State {
-                            name: "hoverEnter"
+                            name: "hoverEnterLight"
                             PropertyChanges { target: lbl; color: "#6c63fe" }
                             PropertyChanges { target: rectBg; color: "white" }
                             PropertyChanges { target: rectBg; border.color: "#6c63fe" }
                         },
                         State {
-                            name: "hoverLeave"
+                            name: "hoverLeaveLight"
                             PropertyChanges { target: lbl; color: "white" }
                             PropertyChanges { target: rectBg; color: "#6c63fe" }
+                        },
+                        State {
+                            name: "hoverEnterDark"
+                            PropertyChanges { target: rectBg; color: "#292929" }
+                            PropertyChanges { target: lbl; color: "#6c63fe" }
+                        },
+                        State {
+                            name: "hoverLeaveDark"
+                            PropertyChanges { target: rectBg; color: "#6c63fe" }
+                            PropertyChanges { target: lbl; color: "#292929" }
                         }
                     ]
 
@@ -317,13 +416,13 @@ Window {
                     bottomMargin: 20
                 }
 
-
                 Item {
                     Layout.fillHeight: true
                 }
 
                 // 14
                 Text {
+                    id: mainText
                     text: "Nice to see you again"
                     font.pointSize: 15
                     color: "black"
